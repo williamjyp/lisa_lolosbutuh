@@ -50,6 +50,9 @@ const user = computed(() => page.props.auth.user);
                                 <NavLink :href="route('layananSelesai')" class="justify-center" v-if="$page.props.auth.user.level === 3 || $page.props.auth.user.level === 2">
                                     Layanan Selesai
                                 </NavLink>
+                                <NavLink :href="route('layananSisiMahasiswa')" class="justify-center" v-if="$page.props.auth.user.level === 4">
+                                    Layanan yang Telah Didaftar Mahasiswa
+                                </NavLink>
                             </div>
                         </div>
 

@@ -12,23 +12,35 @@ class OrderController extends Controller
 
     function getAktif(Request $request){
         $ordera = DB::table('orderan')->join('users','orderan.petugas','=','users.id')->join('jenislayanan','orderan.idlayanan','=','jenislayanan.idlayanan')->where('orderan.petugas', $request->user()->id)->where('status','<','2')->select('orderan.*','users.name as nama_user','jenislayanan.namalayanan as nama_layanan')->orderBy('tglorder', 'desc')->get();
+        $petugas = DB::table('users')->where('level','<','4')->select('id','name')->get();
         return Inertia::render('LayananAktif', [
-            'orders' => $ordera
+            'ordera' => $ordera,
+            'petugas'=> $petugas
         ]);
     }
 
     function getTunda(Request $request){
         $ordert = DB::table('orderan')->join('users','orderan.petugas','=','users.id')->join('jenislayanan','orderan.idlayanan','=','jenislayanan.idlayanan')->where('orderan.petugas', $request->user()->id)->where('status',3)->select('orderan.*','users.name as nama_user','jenislayanan.namalayanan as nama_layanan')->orderBy('tglorder', 'desc')->get();
+        $petugas = DB::table('users')->where('level','<','4')->select('id','name')->get();
         return Inertia::render('LayananTunda', [
-            'orders' => $ordert
+            'ordert' => $ordert,
+            'petugas'=> $petugas
         ]);
 
     }
-
     function getSelesai(Request $request){
         $ordersl = DB::table('orderan')->join('users','orderan.petugas','=','users.id')->join('jenislayanan','orderan.idlayanan','=','jenislayanan.idlayanan')->where('orderan.petugas', $request->user()->id)->where('status',2)->select('orderan.*','users.name as nama_user','jenislayanan.namalayanan as nama_layanan')->orderBy('tglorder', 'desc')->get();
+        $petugas = DB::table('users')->where('level','<','4')->select('id','name')->get();
         return Inertia::render('LayananSelesai', [
-            'orders' => $ordersl
+            'orders' => $ordersl,
+            'petugas'=> $petugas
+        ]);
+    }
+
+    function getOrderanMahasiswa(Request $request){
+        $orderm = DB::table('orderan')->join('users','orderan.petugas','=','users.id')->join('jenislayanan','orderan.idlayanan','=','jenislayanan.idlayanan')->where('orderan.unit', $request->user()->id)->where('status',2)->select('orderan.*','users.name as nama_user','jenislayanan.namalayanan as nama_layanan')->orderBy('tglorder', 'desc')->get();
+        return Inertia::render('LayananSisiMahasiswa', [
+            'orderm' => $orderm
         ]);
     }
     function getJmlO(Request $request){
@@ -55,7 +67,7 @@ class OrderController extends Controller
         }
 
         Orderan::create([
-            'idorder'      => $idordeer,
+            'idorder'      => $idorder,
             'tglorder'     => date("Y-m-d H:i:s"),
             'idlayanan'    => $request->idlayanan,
             'keluhan'      => $request->keluhan,
@@ -63,6 +75,44 @@ class OrderController extends Controller
             'unit'         => $request->unit,
             'status'       => 0,
             'petugas'      => $request->petugas
+        ]);
+    }
+
+    function editOrderan(Request $request){
+        $filePath = null;
+
+        if ($request->hasFile('file_hasil')){
+            $file = $request->file('file_hasil');
+            $fileName = $request->idorder . "_hasil";
+            $filePath = $file->storeAs('pdf', $fileName, 'public');
+        }
+        Orderan::where('idorder', $request->idorder)
+        ->update([
+            'tglstatus'     => date("Y-m-d H:i:s"),
+            'status'       => $request->status,
+            'alasan'       => $request->alasan,
+            'petugas'      => $request->petugas,
+            'catatan_internal' => $request->catatan_internal
+        ]);
+    }
+
+    function editOrderanSelesai(Request $request){
+        $filePath = null;
+
+        if ($request->hasFile('file_hasil')){
+            $file = $request->file('file_hasil');
+            $fileName = $request->idorder . "_hasil";
+            $filePath = $file->storeAs('pdf', $fileName, 'public');
+        }
+        Orderan::where('idorder', $request->idorder)
+        ->update([
+            'tglstatus'     => date("Y-m-d H:i:s"),
+            'status'       => $request->status,
+            'alasan'       => $request->alasan,
+            'petugas'      => $request->petugas,
+            'catatan_internal' => $request->catatan_internal,
+            'nilai'        => $request->nilai,
+            'komentar'     => $request->komentar
         ]);
     }
 

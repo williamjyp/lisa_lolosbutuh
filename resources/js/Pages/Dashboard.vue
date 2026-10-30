@@ -38,7 +38,7 @@ const submitOrderan = async() => {
     try {
         loading.value=true;
     
-        const formOrderan = new formOrderan();
+        const formOrderan = new formData();
         formOrderan.append('idlayanan', form.value.idlayanan)
         formOrderan.append('keluhan', form.value.keluhan)
         formOrderan.append('pemesan', form.value.pemesan)
@@ -63,10 +63,11 @@ const submitOrderan = async() => {
     } catch (err) {
         alert('Terjadi kesalahan saat mengajukan layanan.');
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 
+const inputPlaceholderUraian= ref('Isi Uraian Anda Disini');
 
 
 const jenisLayanan = ref([]);
@@ -74,7 +75,6 @@ const jenisLayanan = ref([]);
 const isOpen = ref(false);
 const selectedLayanan = ref(null);
 
-const inputPlaceholderUraian= ref('Isi Uraian Anda Disini');
 const OpenModal = (item) => {
     selectedLayanan.value = item;
     form.value.petugas = item.iduser;
@@ -191,38 +191,38 @@ onMounted(() => {
                 X
                 </button>
                 </div>
-                <div class="flex flex-row mt-2">
+                <div class="flex flex-row mt-2" v-if="user.level === 4">
                     <div>
                         <iframe class="rounded-md"
                         :src="`/pdf/sop/${ selectedLayanan?.namalayanan }.pdf`" width="100%" height="700px" style="border: none">
                         </iframe>
                     </div>
                     <form @submit.prevent="submitForm">
-                    <div class="bg-orange-200 rounded-md ml-5 p-4 flex flex-col">
-                        <p class="font-semibold">Silahkan masukkan informasi</p>
-                        <textarea  class="rounded-md mt-2"rows="12" max-rows="12" :placeholder="inputPlaceholderUraian" v-model="form.keluhan"></textarea>
-                        <p class="font-semibold">Petugas</p>
-                        <input type="text" class="mt-2 rounded-md" :value="`${ selectedLayanan?.nama_user }`" disabled></input>
-                        <input type="text" v-model="form.petugas" hidden></input>
-                        <input type="text" v-model="form.idlayanan" hidden></input>
-                        <p class="font-semibold">Atas Nama</p>
-                        <input type="text" class="mt-2 rounded-md" v-model="form.pemesan" disabled></input>
-                        <input type="text" class="mt-2 rounded-md" v-model="form.unit" disabled></input>
-                        <p class="font-semibold">File</p>
-                        <input 
-                            type="file" 
-                            @change="handleFile" 
-                            accept=".pdf"
-                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-white-700 hover:file:bg-blue-500"
-                        />
-                        <button 
-                            type="submit" 
-                            :disabled="loading"
-                            class="bg-blue-500 mt-2 text-white font-bold px-4 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
-                        >
-                            {{ loading ? 'Tunggu...' : 'Ajukan' }}
-                        </button>
-                    </div>
+                        <div class="bg-orange-200 rounded-md ml-5 p-4 flex flex-col">
+                            <p class="font-semibold">Silahkan masukkan informasi</p>
+                            <textarea  class="rounded-md mt-2"rows="12" max-rows="12" :placeholder="inputPlaceholderUraian" v-model="form.keluhan"></textarea>
+                            <p class="font-semibold">Petugas</p>
+                            <input type="text" class="mt-2 rounded-md" :value="`${ selectedLayanan?.nama_user }`" disabled></input>
+                            <input type="text" v-model="form.petugas" hidden></input>
+                            <input type="text" v-model="form.idlayanan" hidden></input>
+                            <p class="font-semibold">Atas Nama</p>
+                            <input type="text" class="mt-2 rounded-md" v-model="form.pemesan" disabled></input>
+                            <input type="text" class="mt-2 rounded-md" v-model="form.unit" disabled></input>
+                            <p class="font-semibold">File</p>
+                            <input 
+                                type="file" 
+                                @change="handleFile" 
+                                accept=".pdf"
+                                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-white-700 hover:file:bg-blue-500"
+                            />
+                            <button 
+                                type="submit" 
+                                :disabled="loading"
+                                class="bg-blue-500 mt-2 text-white font-bold px-4 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
+                            >
+                                {{ loading ? 'Tunggu...' : 'Ajukan' }}
+                            </button>
+                        </div>
                     </form>
                     
                 </div>
